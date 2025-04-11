@@ -1,28 +1,13 @@
-use actix_web::{get, web ,HttpResponse, App, HttpServer, Responder};
-use sqlx::PgPool;
-use dotenvy::dotenv;
-use std::env;
+mod config;
+
+use actix_web::{get, web, HttpResponse, App, HttpServer, Responder};
+use crate::config::db_connection::establish_connection; // Import the establish_connection function
 
 #[get("/")]
 async fn health_check() -> impl Responder {
     HttpResponse::Ok().body("OneFinancial API is running!")
 }
 
-async fn establish_connection() -> PgPool {
-    // Load environment variables from .env file
-    dotenv().ok();
-    
-    // Get the DATABASE_URL from environment variables
-    let database_url = env::var("DATABASE_URL")
-        .expect("DATABASE_URL must be set in the .env file");
-    
-    // Establish the PostgreSQL connection pool
-    let pool = PgPool::connect(&database_url)
-        .await
-        .expect("Failed to connect to the database");
-    
-    pool
-}
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
